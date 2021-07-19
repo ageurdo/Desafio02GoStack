@@ -13,8 +13,15 @@ interface CreateTransactionDTO {
 class TransactionsRepository {
   private transactions: Transaction[];
 
+  private balance: Balance;
+
   constructor() {
     this.transactions = [];
+    this.balance = {
+      income: 0,
+      outcome: 0,
+      total: 0,
+    };
   }
 
   public all(): Transaction[] {
@@ -34,11 +41,14 @@ class TransactionsRepository {
     });
 
     myBalance.total = myBalance.income - myBalance.outcome;
+    this.balance = myBalance;
 
     return myBalance;
   }
 
   public create({ title, type, value }: CreateTransactionDTO): Transaction {
+    if (value > this.balance.total) throw Error('Não há caixa suficiente');
+
     const transaction = new Transaction({ title, type, value });
     this.transactions.push(transaction);
     return transaction;
