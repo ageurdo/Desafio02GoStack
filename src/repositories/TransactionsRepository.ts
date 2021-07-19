@@ -47,7 +47,8 @@ class TransactionsRepository {
   }
 
   public create({ title, type, value }: CreateTransactionDTO): Transaction {
-    if (value > this.balance.total) throw Error('Não há caixa suficiente');
+    if (type === 'outcome' && value > this.balance.total)
+      throw Error('Não há caixa suficiente');
 
     const transaction = new Transaction({ title, type, value });
     this.transactions.push(transaction);
